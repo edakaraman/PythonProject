@@ -32,7 +32,6 @@ x_train = x_train.reshape(-1,28, 28,1) #Reshape for CNN
 x_test = x_test.reshape(-1,28, 28, 1)
 model_log=model.fit(x_train,y_train,batch_size=60,epochs=10,verbose=1,validation_split=.3)
 
-# Evaluate the model on test set
 score = model.evaluate(x_test, y_test, verbose=0)
 print('\n', 'Test accuracy:', score[1])
 
@@ -42,8 +41,68 @@ np.argmax(predictions[0])
 x_test = x_test.reshape(-1,28, 28)
 x_test.shape
 
-# Show one of the images from the test dataset
+
 plt.xticks([])
 plt.yticks([])
 plt.xlabel([y_train[0]])
 plt.imshow(x_test[0],cmap=plt.cm.binary)
+
+import os
+fig = plt.figure()
+plt.subplot(2,1,1)
+plt.plot(model_log.history['acc'])
+plt.plot(model_log.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='lower right')
+plt.subplot(2,1,2)
+plt.plot(model_log.history['loss'])
+plt.plot(model_log.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper right')
+plt.tight_layout()
+
+def plot_image(i, predictions_array, true_label, img):
+  predictions_array, true_label, img = predictions_array[i], true_label[i], img[i]
+  plt.grid(False)
+  plt.xticks([])
+  plt.yticks([])
+  
+  plt.imshow(img, cmap=plt.cm.binary)
+
+  predicted_label = np.argmax(predictions_array)
+  if predicted_label == true_label:
+    color = 'blue'
+  else:
+    color = 'red'
+  
+  plt.xlabel("{} {:2.0f}% ({})".format([predicted_label],
+                                100*np.max(predictions_array),
+                                [true_label]),
+                                color=color)
+
+def plot_value_array(i, predictions_array, true_label):
+  predictions_array, true_label = predictions_array[i], true_label[i]
+  plt.grid(False)
+  plt.xticks([])
+  plt.yticks([])
+  thisplot = plt.bar(range(10), predictions_array, color="#777777")
+  plt.ylim([0, 1]) 
+  predicted_label = np.argmax(predictions_array)
+ 
+  thisplot[predicted_label].set_color('red')
+  thisplot[true_label].set_color('blue')
+  
+  num_rows = 5
+  num_cols = 3
+  num_images = num_rows*num_cols
+  plt.figure(figsize=(2*2*num_cols, 2*num_rows))
+for i in range(num_images):
+  plt.subplot(num_rows, 2*num_cols, 2*i+1)
+  plot_image(i, predictions, y_test, x_test)
+  plt.subplot(num_rows, 2*num_cols, 2*i+2)
+  plot_value_array(i, predictions, y_test)
+plt.show()
