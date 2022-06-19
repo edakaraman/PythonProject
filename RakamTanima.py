@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 print("x_train shape:", x_train.shape, "y_train shape:", y_train.shape,"x_test shape:", x_test.shape, "y_test shape:", y_test.shape)
 
@@ -28,7 +29,7 @@ model.add(tf.keras.layers.Dense(10, activation='softmax'))
 model.summary()
 
 model.compile(loss='sparse_categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
-x_train = x_train.reshape(-1,28, 28,1) #Reshape for CNN 
+x_train = x_train.reshape(-1,28, 28,1)
 x_test = x_test.reshape(-1,28, 28, 1)
 model_log=model.fit(x_train,y_train,batch_size=60,epochs=10,verbose=1,validation_split=.3)
 
@@ -47,11 +48,10 @@ plt.yticks([])
 plt.xlabel([y_train[0]])
 plt.imshow(x_test[0],cmap=plt.cm.binary)
 
-import os
 fig = plt.figure()
 plt.subplot(2,1,1)
-plt.plot(model_log.history['acc'])
-plt.plot(model_log.history['val_acc'])
+plt.plot(model_log.history['accuracy'])
+plt.plot(model_log.history['val_accuracy'])
 plt.title('model accuracy')
 plt.ylabel('accuracy')
 plt.xlabel('epoch')
